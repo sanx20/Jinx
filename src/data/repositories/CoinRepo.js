@@ -10,7 +10,6 @@ export class CoinRepo {
                 throw new Error(`Error fetching market data. Status: ${response.status}`);
             }
             const result = await response.json();
-
             return {
                 data: result.data,
                 pagination: {
@@ -23,5 +22,20 @@ export class CoinRepo {
             throw new Error('Error fetching market data: ' + error.message);
         }
     }
-}
 
+    static async fetchCoinDetails(coinId) {
+        try {
+            const response = await fetch(
+                `${ApiEndpoints.getCoinDetails}?id=${coinId}`
+            );
+            if (!response.ok) {
+                throw new Error(`Error fetching coin details. Status: ${response.status}`);
+            }
+            const result = await response.json();
+            return result[0];
+        } catch (error) {
+            console.error('Error fetching coin details:', error.message);
+            throw new Error('Error fetching coin details: ' + error.message);
+        }
+    }
+}

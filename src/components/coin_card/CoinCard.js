@@ -31,12 +31,10 @@ export default function CoinCard({ coin, onPress }) {
                 activeOpacity={0.9}
                 style={styles.touchable}
             >
-                {/* Coin Image */}
                 <Image
                     source={{ uri: coin.image || 'https://via.placeholder.com/50x50?text=?"' }}
                     style={styles.coinImage}
                 />
-                {/* Coin Details */}
                 <View style={styles.coinDetails}>
                     <Text style={styles.coinName}>{coin.name}</Text>
                     <Text style={styles.coinSymbol}>{coin.symbol}</Text>
