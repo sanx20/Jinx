@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { onAuthStateChanged } from 'firebase/auth';
-import { FIREBASE_AUTH } from './FirebaseConfig';
-import { Provider } from 'react-redux';
-import { store } from './src/redux/store';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import MarketTrendsScreen from './src/screens/market_trends/MarketTrendsScreen';
-
+import CoinDetailScreen from './src/screens/coin_detail/CoinDetailScreen';
 import AuthScreen from './src/screens/auth/AuthScreen';
-import Icon from 'react-native-vector-icons/Ionicons'; // Ensure this is installed
+import { onAuthStateChanged } from 'firebase/auth';
+import { FIREBASE_AUTH } from './FirebaseConfig';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -24,7 +22,7 @@ const TabNavigator = () => {
           let iconName;
 
           if (route.name === 'Dashboard') {
-            iconName = 'home-outline';
+            iconName = 'stats-chart-outline';
           } else if (route.name === 'Trends') {
             iconName = 'trending-up-outline';
           }
@@ -40,7 +38,7 @@ const TabNavigator = () => {
         component={DashboardScreen}
         options={{
           headerStyle: { backgroundColor: 'black' },
-          headerTitle: 'Home',
+          headerTitle: '',
           headerTintColor: '#BB86FC',
           headerTitleStyle: { fontWeight: 'bold' },
         }}
@@ -82,13 +80,24 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={user ? 'Root' : 'Auth'}>
+      <Stack.Navigator initialRouteName={user ? 'Main' : 'Login'}>
         {user ? (
-          <Stack.Screen
-            name="Root"
-            component={TabNavigator}
-            options={{ headerShown: false }}
-          />
+          <>
+            <Stack.Screen
+              name="Main"
+              component={TabNavigator}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="CoinDetail"
+              component={CoinDetailScreen}
+              options={{
+                headerStyle: { backgroundColor: 'black' },
+                headerTitle: 'Coin Detail',
+                headerTintColor: '#fff',
+              }}
+            />
+          </>
         ) : (
           <Stack.Screen
             name="Auth"
@@ -101,13 +110,7 @@ const App = () => {
   );
 };
 
-const AppWithRedux = () => (
-  <Provider store={store}>
-    <App />
-  </Provider>
-);
-
-export default AppWithRedux;
+export default App;
 
 const styles = StyleSheet.create({
   loadingContainer: {
