@@ -2,17 +2,19 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
     card: {
-        flexDirection: 'row',
-        alignItems: 'center',
         backgroundColor: '#1A1A1A',
-        borderRadius: 12,
+        borderRadius: 15,
         padding: 16,
         marginBottom: 12,
         elevation: 5,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.8,
-        shadowRadius: 5,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.7,
+        shadowRadius: 6,
+    },
+    touchable: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     coinImage: {
         width: 50,
@@ -27,27 +29,28 @@ export default StyleSheet.create({
     },
     coinName: {
         fontSize: 18,
-        color: '#E6E6E6',
+        color: '#FFFFFF',
         fontWeight: 'bold',
+    },
+    coinSymbol: {
+        fontSize: 12,
+        color: '#A0A0A0',
+        marginTop: 2,
     },
     coinPrice: {
         fontSize: 16,
         color: '#BB86FC',
-        marginTop: 4,
+        marginTop: 8,
     },
     priceChange: {
         fontSize: 14,
         marginTop: 4,
+        fontWeight: '600',
     },
     positiveChange: {
         color: '#4CAF50',
     },
     negativeChange: {
         color: '#FF5252',
-    },
-    marketCap: {
-        fontSize: 12,
-        color: '#B0B0B0',
-        marginTop: 4,
     },
 });

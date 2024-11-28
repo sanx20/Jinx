@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, View, StyleSheet, Button } from 'react-native';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Provider } from 'react-redux';
+import { store } from './src/redux/store';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import MarketTrendsScreen from './src/screens/market_trends/MarketTrendsScreen';
 import CoinDetailScreen from './src/screens/coin_detail/CoinDetailScreen';
@@ -110,7 +112,13 @@ const App = () => {
   );
 };
 
-export default App;
+const AppWithProvider = () => (
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+
+export default AppWithProvider;
 
 const styles = StyleSheet.create({
   loadingContainer: {
