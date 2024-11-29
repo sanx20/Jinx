@@ -82,7 +82,7 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={user ? 'Main' : 'Login'}>
+      <Stack.Navigator initialRouteName={user ? 'Main' : 'Auth'}>
         {user ? (
           <>
             <Stack.Screen

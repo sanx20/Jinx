@@ -38,4 +38,21 @@ export class CoinRepo {
             throw new Error('Error fetching coin details: ' + error.message);
         }
     }
+
+    static async fetchCoinMarkets(coinId) {
+        try {
+            const response = await fetch(
+                `${ApiEndpoints.getCoinMarkets}?id=${coinId}`
+            );
+            if (!response.ok) {
+                throw new Error(`Error fetching coin markets. Status: ${response.status}`);
+            }
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('Error fetching coin markets:', error.message);
+            throw new Error('Error fetching coin markets: ' + error.message);
+        }
+    }
+    
 }

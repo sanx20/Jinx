@@ -31,6 +31,21 @@ export const fetchCoinDetails = createAsyncThunk(
     }
 );
 
+export const fetchCoinMarkets = createAsyncThunk(
+    'coins/fetchCoinMarkets',
+    async (coinId, thunkAPI) => {
+        try {
+            const markets = await CoinRepo.fetchCoinMarkets(coinId);
+            if (!markets) {
+                return thunkAPI.rejectWithValue('Failed to fetch coin markets');
+            }
+            return markets;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
+
 const coinSlice = createSlice({
     name: 'coins',
     initialState: {
@@ -77,6 +92,17 @@ const coinSlice = createSlice({
                 state.coinDetails = action.payload;
             })
             .addCase(fetchCoinDetails.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.payload || action.error.message;
+            })
+            .addCase(fetchCoinMarkets.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchCoinMarkets.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.markets = action.payload;
+            })
+            .addCase(fetchCoinMarkets.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload || action.error.message;
             });
