@@ -6,7 +6,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Provider } from 'react-redux';
 import { store } from './src/redux/store';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
-import MarketTrendsScreen from './src/screens/market_trends/MarketTrendsScreen';
+import ExchangesScreen from './src/screens/exchanges/ExchangesScreen';
+import ExchangeDetailsScreen from './src/screens/exchange_detail/ExchangeDetailScreen';
 import CoinDetailScreen from './src/screens/coin_detail/CoinDetailScreen';
 import AuthScreen from './src/screens/auth/AuthScreen';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -25,8 +26,8 @@ const TabNavigator = () => {
 
           if (route.name === 'Dashboard') {
             iconName = 'stats-chart-outline';
-          } else if (route.name === 'Trends') {
-            iconName = 'trending-up-outline';
+          } else if (route.name === 'Exchanges') {
+            iconName = 'business-outline';
           }
           return <Icon name={iconName} size={size} color={color} />;
         },
@@ -46,11 +47,11 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Trends"
-        component={MarketTrendsScreen}
+        name="Exchanges"
+        component={ExchangesScreen}
         options={{
           headerStyle: { backgroundColor: 'black' },
-          headerTitle: 'Market Trends',
+          headerTitle: 'Exchanges',
           headerTintColor: '#BB86FC',
           headerTitleStyle: { fontWeight: 'bold' },
         }}
@@ -96,6 +97,15 @@ const App = () => {
               options={{
                 headerStyle: { backgroundColor: 'black' },
                 headerTitle: 'Coin Detail',
+                headerTintColor: '#fff',
+              }}
+            />
+            <Stack.Screen
+              name="ExchangeDetails"
+              component={ExchangeDetailsScreen}
+              options={{
+                headerStyle: { backgroundColor: 'black' },
+                headerTitle: 'Exchange Details',
                 headerTintColor: '#fff',
               }}
             />
