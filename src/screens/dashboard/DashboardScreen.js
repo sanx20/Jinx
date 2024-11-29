@@ -2,19 +2,32 @@ import React, { useEffect } from 'react';
 import { View, FlatList, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMarketData } from '../../redux/slices/CoinSlice';
+import { fetchGlobalStats } from '../../redux/slices/GlobalSlice';
 import CoinCard from '../../components/coin_card/CoinCard';
 
 export default function DashboardScreen({ navigation }) {
     const dispatch = useDispatch();
-    const { marketData, status, isFetchingMore, hasNextPage, start, limit, error } = useSelector(
-        (state) => state.coins
-    );
+
+    const {
+        marketData,
+        status: marketStatus,
+        isFetchingMore,
+        hasNextPage,
+        start,
+        limit,
+        error: marketError,
+    } = useSelector((state) => state.coins);
+
+    const { globalStats, status: globalStatus, error: globalError } = useSelector((state) => state.global);
 
     useEffect(() => {
-        if (status === 'idle') {
+        if (marketStatus === 'idle') {
             dispatch(fetchMarketData({ start: 0, limit }));
         }
-    }, [dispatch, status, limit]);
+        if (globalStatus === 'idle') {
+            dispatch(fetchGlobalStats());
+        }
+    }, [dispatch, marketStatus, globalStatus, limit]);
 
     const loadMoreData = () => {
         if (!isFetchingMore && hasNextPage) {
@@ -55,13 +68,28 @@ export default function DashboardScreen({ navigation }) {
         />
     );
 
-
     return (
         <View style={styles.container}>
-            {status === 'loading' && marketData.length === 0 ? (
+            {globalStatus === 'loading' ? (
                 <ActivityIndicator size="large" color="#BB86FC" />
-            ) : error ? (
-                <Text style={styles.errorText}>Error: {error}</Text>
+            ) : globalError ? (
+                <Text style={styles.errorText}>Error: {globalError}</Text>
+            ) : (
+                globalStats && (
+                    <View style={styles.globalStats}>
+                        <Text style={styles.statsText}>Total Coins: {globalStats.coins_count}</Text>
+                        <Text style={styles.statsText}>
+                            Market Cap: ${parseFloat(globalStats.total_mcap).toLocaleString()}
+                        </Text>
+                        <Text style={styles.statsText}>BTC Dominance: {globalStats.btc_d}%</Text>
+                    </View>
+                )
+            )}
+
+            {marketStatus === 'loading' && marketData.length === 0 ? (
+                <ActivityIndicator size="large" color="#BB86FC" />
+            ) : marketError ? (
+                <Text style={styles.errorText}>Error: {marketError}</Text>
             ) : (
                 <FlatList
                     data={marketData}
@@ -80,6 +108,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#0D0D0D',
+    },
+    globalStats: {
+        padding: 16,
+        margin: 16,
+        backgroundColor: '#1E1E1E',
+        borderRadius: 8,
+    },
+    statsText: {
+        color: '#BB86FC',
+        fontSize: 14,
+        marginBottom: 8,
     },
     loadingFooter: {
         paddingVertical: 10,
