@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, Dimensions, FlatList } from 
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCoinDetails, fetchCoinMarkets } from '../../redux/slices/CoinSlice';
 import { LineChart } from 'react-native-chart-kit';
+import styles from './styles';
 
 export default function CoinDetailScreen({ route }) {
     const { coinId } = route.params;
@@ -38,7 +39,6 @@ export default function CoinDetailScreen({ route }) {
         );
     }
 
-    // Calculate estimated prices
     const currentPrice = parseFloat(coinDetails.price_usd || 0);
     const price24hAgo = currentPrice / (1 + parseFloat(coinDetails.percent_change_24h || 0) / 100);
     const price1hAgo = currentPrice / (1 + parseFloat(coinDetails.percent_change_1h || 0) / 100);
@@ -70,7 +70,6 @@ export default function CoinDetailScreen({ route }) {
                 24h Change: {parseFloat(coinDetails.percent_change_24h).toFixed(2)}%
             </Text>
 
-            {/* Line Chart */}
             <View style={styles.graphContainer}>
                 <LineChart
                     data={chartData}
@@ -93,7 +92,6 @@ export default function CoinDetailScreen({ route }) {
                 />
             </View>
 
-            {/* Market Data Table */}
             <FlatList
                 data={markets}
                 keyExtractor={(item, index) => `${item.name}-${index}`}
@@ -113,65 +111,3 @@ export default function CoinDetailScreen({ route }) {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#0D0D0D',
-        padding: 20,
-    },
-    coinName: {
-        fontSize: 24,
-        color: '#FFFFFF',
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    price: {
-        fontSize: 22,
-        color: '#BB86FC',
-        marginBottom: 10,
-    },
-    marketCap: {
-        fontSize: 16,
-        color: '#A0A0A0',
-        marginBottom: 10,
-    },
-    change: {
-        fontSize: 16,
-        color: '#4CAF50',
-        marginBottom: 20,
-    },
-    graphContainer: {
-        marginTop: 20,
-    },
-    chart: {
-        borderRadius: 16,
-    },
-    marketList: {
-        marginTop: 20,
-    },
-    marketRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingVertical: 8,
-        borderBottomColor: '#333',
-        borderBottomWidth: 1,
-    },
-    marketName: {
-        color: '#FFFFFF',
-        fontSize: 14,
-    },
-    marketPrice: {
-        color: '#BB86FC',
-        fontSize: 14,
-    },
-    marketVolume: {
-        color: '#A0A0A0',
-        fontSize: 14,
-    },
-    errorText: {
-        color: '#FF5252',
-        fontSize: 16,
-        textAlign: 'center',
-    },
-});
