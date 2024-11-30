@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import { store } from './src/redux/store';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import ExchangesScreen from './src/screens/exchanges/ExchangesScreen';
+import CryptoNewsScreen from './src/screens/crypto_news/CryptoNewsSCreen';
 import CoinDetailScreen from './src/screens/coin_detail/CoinDetailScreen';
 import AuthScreen from './src/screens/auth/AuthScreen';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -27,6 +28,8 @@ const TabNavigator = () => {
             iconName = 'stats-chart-outline';
           } else if (route.name === 'Exchanges') {
             iconName = 'business-outline';
+          } else if (route.name === 'CryptoNews') {
+            iconName = 'newspaper-outline';
           }
           return <Icon name={iconName} size={size} color={color} />;
         },
@@ -51,6 +54,16 @@ const TabNavigator = () => {
         options={{
           headerStyle: { backgroundColor: 'black' },
           headerTitle: 'Exchanges',
+          headerTintColor: '#BB86FC',
+          headerTitleStyle: { fontWeight: 'bold' },
+        }}
+      />
+      <Tab.Screen
+        name="CryptoNews"
+        component={CryptoNewsScreen}
+        options={{
+          headerStyle: { backgroundColor: 'black' },
+          headerTitle: 'News',
           headerTintColor: '#BB86FC',
           headerTitleStyle: { fontWeight: 'bold' },
         }}
