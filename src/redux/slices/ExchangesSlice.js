@@ -1,44 +1,42 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { ApiEndpoints } from '../../constants/ApiEndpoints';
+import { ExchangesRepo } from '../../data/repositories/ExchangesRepo';
 
 export const fetchExchanges = createAsyncThunk(
     'exchanges/fetchExchanges',
-    async (_, thunkAPI) => {
+    async (_, { rejectWithValue }) => {
         try {
-            const response = await fetch(ApiEndpoints.getExchanges);
-            if (!response.ok) {
-                throw new Error(`Error fetching exchanges. Status: ${response.status}`);
-            }
-            const result = await response.json();
-            return Object.values(result);
+            const data = await ExchangesRepo.fetchExchanges();
+            const exchangesArray = Object.values(data);
+            return exchangesArray;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.message);
+            return rejectWithValue(error.message || 'Failed to fetch exchanges');
         }
     }
 );
 
-const exchangesSlice = createSlice({
+const exchangeSlice = createSlice({
     name: 'exchanges',
     initialState: {
         exchanges: [],
-        status: 'idle',
+        isLoading: false,
         error: null,
     },
     reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(fetchExchanges.pending, (state) => {
-                state.status = 'loading';
+                state.isLoading = true;
+                state.error = null;
             })
             .addCase(fetchExchanges.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.isLoading = false;
                 state.exchanges = action.payload;
             })
             .addCase(fetchExchanges.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload || action.error.message;
+                state.isLoading = false;
+                state.error = action.payload || 'An error occurred';
             });
     },
 });
 
-export default exchangesSlice.reducer;
+export default exchangeSlice.reducer;

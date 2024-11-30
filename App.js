@@ -7,7 +7,6 @@ import { Provider } from 'react-redux';
 import { store } from './src/redux/store';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import ExchangesScreen from './src/screens/exchanges/ExchangesScreen';
-import ExchangeDetailsScreen from './src/screens/exchange_detail/ExchangeDetailScreen';
 import CoinDetailScreen from './src/screens/coin_detail/CoinDetailScreen';
 import AuthScreen from './src/screens/auth/AuthScreen';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -97,15 +96,6 @@ const App = () => {
               options={{
                 headerStyle: { backgroundColor: 'black' },
                 headerTitle: 'Coin Detail',
-                headerTintColor: '#fff',
-              }}
-            />
-            <Stack.Screen
-              name="ExchangeDetails"
-              component={ExchangeDetailsScreen}
-              options={{
-                headerStyle: { backgroundColor: 'black' },
-                headerTitle: 'Exchange Details',
                 headerTintColor: '#fff',
               }}
             />
