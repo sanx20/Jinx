@@ -6,6 +6,9 @@ export default StyleSheet.create({
         backgroundColor: '#0D0D0D',
         padding: 20,
     },
+    topSection: {
+        alignItems: 'center',
+    },
     coinName: {
         fontSize: 24,
         color: '#FFFFFF',
@@ -27,29 +30,25 @@ export default StyleSheet.create({
         color: '#4CAF50',
         marginBottom: 20,
     },
-    graphContainer: {
-        marginTop: 20,
-    },
-    chart: {
-        borderRadius: 16,
-    },
     marketList: {
         marginTop: 20,
     },
-    marketRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingVertical: 8,
-        borderBottomColor: '#333',
-        borderBottomWidth: 1,
+    marketTile: {
+        flex: 1,
+        backgroundColor: '#1F1F1F',
+        padding: 15,
+        margin: 5,
+        borderRadius: 8,
     },
     marketName: {
         color: '#FFFFFF',
         fontSize: 14,
+        marginBottom: 5,
     },
     marketPrice: {
         color: '#BB86FC',
         fontSize: 14,
+        marginBottom: 5,
     },
     marketVolume: {
         color: '#A0A0A0',

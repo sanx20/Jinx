@@ -3,6 +3,7 @@ import coinReducer from './slices/CoinSlice';
 import globalReducer from './slices/GlobalSlice';
 import exchangesReducer from './slices/ExchangesSlice';
 import cryptoNewsReducer from './slices/NewsSlice';
+import candleReducer from './slices/CandleSlice';
 
 
 export const store = configureStore({
@@ -11,5 +12,6 @@ export const store = configureStore({
         global: globalReducer,
         exchanges: exchangesReducer,
         cryptoNews: cryptoNewsReducer,
+        candles: candleReducer,
     },
 });
