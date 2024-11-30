@@ -9,6 +9,7 @@ import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import ExchangesScreen from './src/screens/exchanges/ExchangesScreen';
 import CryptoNewsScreen from './src/screens/crypto_news/CryptoNewsSCreen';
 import CoinDetailScreen from './src/screens/coin_detail/CoinDetailScreen';
+import PortfolioScreen from './src/screens/portfolio/PortfolioScreen';
 import AuthScreen from './src/screens/auth/AuthScreen';
 import { onAuthStateChanged } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
@@ -29,6 +30,9 @@ const TabNavigator = () => {
           } else if (route.name === 'Exchanges') {
             iconName = 'business-outline';
           } else if (route.name === 'CryptoNews') {
+            iconName = 'newspaper-outline';
+          }
+          else if (route.name === 'Porfolio') {
             iconName = 'newspaper-outline';
           }
           return <Icon name={iconName} size={size} color={color} />;
@@ -64,6 +68,16 @@ const TabNavigator = () => {
         options={{
           headerStyle: { backgroundColor: 'black' },
           headerTitle: 'News',
+          headerTintColor: '#BB86FC',
+          headerTitleStyle: { fontWeight: 'bold' },
+        }}
+      />
+      <Tab.Screen
+        name="Porfolio"
+        component={PortfolioScreen}
+        options={{
+          headerStyle: { backgroundColor: 'black' },
+          headerTitle: 'Portfolio',
           headerTintColor: '#BB86FC',
           headerTitleStyle: { fontWeight: 'bold' },
         }}
