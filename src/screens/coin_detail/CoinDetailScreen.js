@@ -1,26 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, FlatList, Button, Alert } from 'react-native';
+import { View, Text, ActivityIndicator, FlatList, Button, Alert, Modal, TextInput } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCoinDetails, fetchCoinMarkets } from '../../redux/slices/CoinSlice';
 import { fetchCandleData } from '../../redux/slices/CandleSlice';
 import { updatePortfolio } from '../../redux/slices/PortfolioSlice';
-import { FIREBASE_AUTH } from '../../../FirebaseConfig'; // Import Firebase Auth
+import { FIREBASE_AUTH } from '../../../FirebaseConfig';
+import { fetchPortfolio } from '../../redux/slices/PortfolioSlice';
 import CandleChart from '../../components/candle_chart/CandleChart';
 import styles from './styles';
 
 export default function CoinDetailScreen({ route }) {
-    const { coinId } = route.params; // Only coinId is passed
+    const { coinId } = route.params;
     const dispatch = useDispatch();
-    const [userId, setUserId] = useState(null); // State to hold user ID
+    const [userId, setUserId] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [quantity, setQuantity] = useState('');
+    const [transactionType, setTransactionType] = useState('');
 
     const { coinDetails, markets, status, error } = useSelector((state) => state.coins);
     const { candleData, candleStatus, candleError } = useSelector((state) => state.candles);
+    const { balance } = useSelector((state) => state.portfolio);
 
     useEffect(() => {
-        // Fetch the logged-in user's ID from Firebase Auth
         const currentUser = FIREBASE_AUTH.currentUser;
         if (currentUser) {
             setUserId(currentUser.uid);
+            dispatch(fetchPortfolio(currentUser.uid));
         } else {
             Alert.alert('Error', 'User is not logged in.');
         }
@@ -41,30 +46,45 @@ export default function CoinDetailScreen({ route }) {
     const isLoading = status === 'loading' || candleStatus === 'loading';
     const hasError = error || candleError;
 
-    const handleAddToPortfolio = () => {
+    const handleTransaction = () => {
         if (!userId) {
             Alert.alert('Error', 'User ID is missing. Please log in.');
             return;
         }
 
-        if (!coinDetails) {
-            Alert.alert('Error', 'Coin details are unavailable.');
+        const totalCost = parseFloat(coinDetails?.price_usd || 0) * parseFloat(quantity || 0);
+
+        if (isNaN(totalCost) || isNaN(quantity) || quantity <= 0) {
+            Alert.alert('Error', 'Invalid quantity or calculation.');
             return;
         }
 
-        const coin = {
-            id: coinId,
-            symbol: coinDetails.symbol,
-            name: coinDetails.name,
-            price_usd: parseFloat(coinDetails.price_usd || 0),
-            market_cap_usd: parseFloat(coinDetails.market_cap_usd || 0),
-        };
+        if (transactionType === 'buy' && totalCost > balance) {
+            Alert.alert('Error', 'Insufficient balance to complete the transaction.');
+            return;
+        }
 
-        dispatch(updatePortfolio({ userId, coin }))
+        dispatch(
+            updatePortfolio({
+                userId,
+                coin: coinDetails,
+                action: transactionType,
+                quantity,
+                totalCost,
+            })
+        )
             .unwrap()
-            .then(() => Alert.alert('Success', `${coin.name} added to your portfolio!`))
-            .catch((err) => Alert.alert('Error', `Failed to add coin: ${err}`));
+            .then(() => {
+                Alert.alert(
+                    'Success',
+                    `${transactionType === 'buy' ? 'Bought' : 'Sold'} ${quantity} ${coinDetails.symbol}`
+                );
+                setModalVisible(false);
+                setQuantity('');
+            })
+            .catch((err) => Alert.alert('Error', `Failed to complete transaction: ${err}`));
     };
+
 
     if (isLoading) {
         return (
@@ -105,7 +125,24 @@ export default function CoinDetailScreen({ route }) {
                 <Text style={styles.price}>${currentPrice.toLocaleString()}</Text>
                 <Text style={styles.marketCap}>Market Cap: ${marketCap}</Text>
                 <Text style={styles.change}>24h Change: {percentChange24h}%</Text>
-                <Button title="Add to Portfolio" onPress={handleAddToPortfolio} />
+                <Text style={styles.balance}>Your Balance: ${balance.toLocaleString()}</Text>
+                <View style={styles.buttonContainer}>
+                    <Button
+                        title="Buy"
+                        onPress={() => {
+                            setTransactionType('buy');
+                            setModalVisible(true);
+                        }}
+                    />
+                    <Button
+                        title="Sell"
+                        color="red"
+                        onPress={() => {
+                            setTransactionType('sell');
+                            setModalVisible(true);
+                        }}
+                    />
+                </View>
             </View>
 
             <CandleChart data={candleData || []} />
@@ -127,6 +164,35 @@ export default function CoinDetailScreen({ route }) {
                     </View>
                 )}
             />
+
+            <Modal visible={modalVisible} transparent={true}>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>
+                            {transactionType === 'buy' ? 'Buy' : 'Sell'} {coinDetails?.symbol}
+                        </Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter quantity"
+                            keyboardType="numeric"
+                            value={quantity}
+                            onChangeText={setQuantity}
+                        />
+                        <View style={styles.modalActions}>
+                            <Button
+                                title="Confirm"
+                                onPress={handleTransaction}
+                                disabled={!quantity || isNaN(quantity) || quantity <= 0}
+                            />
+                            <Button
+                                title="Cancel"
+                                color="red"
+                                onPress={() => setModalVisible(false)}
+                            />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }

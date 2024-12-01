@@ -8,6 +8,7 @@ export default StyleSheet.create({
     },
     topSection: {
         alignItems: 'center',
+        marginBottom: 20,
     },
     coinName: {
         fontSize: 24,
@@ -29,6 +30,17 @@ export default StyleSheet.create({
         fontSize: 16,
         color: '#4CAF50',
         marginBottom: 20,
+    },
+    balance: {
+        fontSize: 16,
+        color: '#A0A0A0',
+        marginVertical: 10,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 15,
+        width: '80%',
     },
     marketList: {
         marginTop: 20,
@@ -58,5 +70,35 @@ export default StyleSheet.create({
         color: '#FF5252',
         fontSize: 16,
         textAlign: 'center',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    },
+    modalContent: {
+        width: '80%',
+        backgroundColor: '#1F1F1F',
+        borderRadius: 10,
+        padding: 20,
+    },
+    modalTitle: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 15,
+    },
+    input: {
+        backgroundColor: '#2C2C2C',
+        color: '#FFFFFF',
+        borderRadius: 8,
+        padding: 10,
+        marginBottom: 15,
+        fontSize: 16,
+    },
+    modalActions: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
 });

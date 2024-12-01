@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 const CandleChart = ({ data }) => {
     const screenWidth = Dimensions.get('window').width;
     const chartHeight = 300;
-    const chartWidth = screenWidth - 40;
+    const chartWidth = screenWidth - 60;
 
     const validData = data.map((d) => ({
         high: parseFloat(d.high) || 0,

@@ -1,67 +1,66 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Modal, StyleSheet } from 'react-native';
+import { View, Text, Modal, TextInput, Button, StyleSheet } from 'react-native';
 
-const AddCoinModal = ({ isVisible, onClose, onAddCoin }) => {
-    const [coinData, setCoinData] = useState({
-        symbol: '',
-        quantity: 0,
-        purchasePrice: 0,
-    });
+export default function AddCoxinModal({ isVisible, onClose, onConfirm, coin, action }) {
+    const [quantity, setQuantity] = useState('');
 
-    const handleAdd = () => {
-        onAddCoin(coinData);
+    const handleConfirm = () => {
+        const parsedQuantity = parseFloat(quantity);
+        if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
+            alert('Please enter a valid quantity.');
+            return;
+        }
+        onConfirm(parsedQuantity);
+        setQuantity('');
     };
 
     return (
-        <Modal visible={isVisible} animationType="slide">
-            <View style={styles.container}>
-                <Text style={styles.title}>Add Coin</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Symbol (e.g., BTC)"
-                    value={coinData.symbol}
-                    onChangeText={(text) => setCoinData({ ...coinData, symbol: text })}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Quantity"
-                    keyboardType="numeric"
-                    value={String(coinData.quantity)}
-                    onChangeText={(text) =>
-                        setCoinData({ ...coinData, quantity: parseFloat(text) })
-                    }
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Purchase Price"
-                    keyboardType="numeric"
-                    value={String(coinData.purchasePrice)}
-                    onChangeText={(text) =>
-                        setCoinData({ ...coinData, purchasePrice: parseFloat(text) })
-                    }
-                />
-                <Button title="Add" onPress={handleAdd} />
-                <Button title="Cancel" onPress={onClose} />
+        <Modal visible={isVisible} animationType="slide" transparent>
+            <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                    <Text style={styles.modalTitle}>
+                        {action === 'buy' ? 'Buy' : 'Sell'} {coin?.name || ''}
+                    </Text>
+                    <TextInput
+                        placeholder="Enter quantity"
+                        value={quantity}
+                        onChangeText={setQuantity}
+                        keyboardType="numeric"
+                        style={styles.input}
+                    />
+                    <Button title="Confirm" onPress={handleConfirm} />
+                    <Button title="Cancel" onPress={onClose} color="red" />
+                </View>
             </View>
         </Modal>
     );
-};
+}
 
 const styles = StyleSheet.create({
-    container: {
+    modalContainer: {
         flex: 1,
-        padding: 20,
         justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
     },
-    title: {
+    modalContent: {
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        padding: 20,
+        width: '80%',
+        alignItems: 'center',
+    },
+    modalTitle: {
         fontSize: 18,
+        fontWeight: 'bold',
         marginBottom: 10,
     },
     input: {
-        borderBottomWidth: 1,
-        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: '#ccc',
         padding: 10,
+        marginBottom: 20,
+        width: '100%',
+        borderRadius: 8,
     },
 });
-
-export default AddCoinModal;
