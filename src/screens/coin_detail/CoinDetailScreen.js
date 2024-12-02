@@ -3,11 +3,11 @@ import { View, Text, ActivityIndicator, FlatList, Button, Alert, Modal, TextInpu
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCoinDetails, fetchCoinMarkets } from '../../redux/slices/CoinSlice';
 import { fetchCandleData } from '../../redux/slices/CandleSlice';
-import { updatePortfolio } from '../../redux/slices/PortfolioSlice';
+import { updatePortfolio, fetchPortfolio } from '../../redux/slices/PortfolioSlice';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
-import { fetchPortfolio } from '../../redux/slices/PortfolioSlice';
 import CandleChart from '../../components/candle_chart/CandleChart';
 import styles from './styles';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function CoinDetailScreen({ route }) {
     const { coinId } = route.params;
@@ -16,6 +16,7 @@ export default function CoinDetailScreen({ route }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [quantity, setQuantity] = useState('');
     const [transactionType, setTransactionType] = useState('');
+    const isFocused = useIsFocused();
 
     const { coinDetails, markets, status, error } = useSelector((state) => state.coins);
     const { candleData, candleStatus, candleError } = useSelector((state) => state.candles);
@@ -29,7 +30,13 @@ export default function CoinDetailScreen({ route }) {
         } else {
             Alert.alert('Error', 'User is not logged in.');
         }
-    }, []);
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (isFocused && userId) {
+            dispatch(fetchPortfolio(userId));
+        }
+    }, [isFocused, dispatch, userId]);
 
     useEffect(() => {
         if (coinId) {
@@ -52,10 +59,12 @@ export default function CoinDetailScreen({ route }) {
             return;
         }
 
-        const totalCost = parseFloat(coinDetails?.price_usd || 0) * parseFloat(quantity || 0);
+        const quantityValue = parseFloat(quantity || 0);
+        const priceValue = parseFloat(coinDetails?.price_usd || 0);
+        const totalCost = parseFloat((priceValue * quantityValue).toFixed(2));
 
-        if (isNaN(totalCost) || isNaN(quantity) || quantity <= 0) {
-            Alert.alert('Error', 'Invalid quantity or calculation.');
+        if (isNaN(quantityValue) || quantityValue <= 0) {
+            Alert.alert('Error', 'Invalid quantity.');
             return;
         }
 
@@ -69,7 +78,7 @@ export default function CoinDetailScreen({ route }) {
                 userId,
                 coin: coinDetails,
                 action: transactionType,
-                quantity,
+                quantity: quantityValue,
                 totalCost,
             })
         )
@@ -77,14 +86,14 @@ export default function CoinDetailScreen({ route }) {
             .then(() => {
                 Alert.alert(
                     'Success',
-                    `${transactionType === 'buy' ? 'Bought' : 'Sold'} ${quantity} ${coinDetails.symbol}`
+                    `${transactionType === 'buy' ? 'Bought' : 'Sold'} ${quantityValue} ${coinDetails.symbol}`
                 );
                 setModalVisible(false);
                 setQuantity('');
+                dispatch(fetchPortfolio(userId)); // Fetch updated balance and portfolio
             })
             .catch((err) => Alert.alert('Error', `Failed to complete transaction: ${err}`));
     };
-
 
     if (isLoading) {
         return (
@@ -187,7 +196,10 @@ export default function CoinDetailScreen({ route }) {
                             <Button
                                 title="Cancel"
                                 color="red"
-                                onPress={() => setModalVisible(false)}
+                                onPress={() => {
+                                    setModalVisible(false);
+                                    setQuantity('');
+                                }}
                             />
                         </View>
                     </View>

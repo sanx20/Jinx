@@ -72,6 +72,8 @@ export const updatePortfolio = createAsyncThunk(
                 }
             }
 
+            updatedBalance = parseFloat(updatedBalance.toFixed(2));
+
             await updateDoc(userDocRef, {
                 balance: updatedBalance,
                 portfolio: updatedPortfolio,

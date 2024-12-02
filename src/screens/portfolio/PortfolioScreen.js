@@ -1,38 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Button, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useEffect } from 'react';
+import {
+    View,
+    Text,
+    FlatList,
+    StyleSheet,
+    ActivityIndicator,
+    TouchableOpacity,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchPortfolio, updatePortfolio } from '../../redux/slices/PortfolioSlice';
-import AddCoinModal from '../../components/add_coin_modal/AddCoinModal';
+import { fetchPortfolio } from '../../redux/slices/PortfolioSlice';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function PortfolioScreen() {
+export default function PortfolioScreen({ navigation }) {
     const dispatch = useDispatch();
+    const isFocused = useIsFocused();
     const userId = FIREBASE_AUTH.currentUser?.uid;
     const { portfolio, balance, status, error } = useSelector((state) => state.portfolio);
 
-    const [selectedCoin, setSelectedCoin] = useState(null);
-    const [action, setAction] = useState(null);
-    const [isModalVisible, setIsModalVisible] = useState(false);
-
     useEffect(() => {
-        if (userId) dispatch(fetchPortfolio(userId));
-    }, [dispatch, userId]);
-
-    const handleTransaction = (quantity) => {
-        const totalCost = quantity * selectedCoin.price_usd;
-
-        dispatch(
-            updatePortfolio({
-                userId,
-                coin: selectedCoin,
-                action,
-                quantity,
-                totalCost,
-            })
-        );
-
-        setIsModalVisible(false);
-    };
+        if (isFocused && userId) {
+            dispatch(fetchPortfolio(userId));
+        }
+    }, [isFocused, dispatch, userId]);
 
     if (status === 'loading') {
         return (
@@ -45,10 +35,14 @@ export default function PortfolioScreen() {
     if (error) {
         return (
             <View style={styles.container}>
-                <Text>Error: {error}</Text>
+                <Text style={styles.errorText}>Error: {error}</Text>
             </View>
         );
     }
+
+    const handleCoinPress = (coin) => {
+        navigation.navigate('CoinDetail', { coinId: coin.id });
+    };
 
     return (
         <View style={styles.container}>
@@ -57,42 +51,20 @@ export default function PortfolioScreen() {
                 data={Object.values(portfolio)}
                 keyExtractor={(item) => item.symbol}
                 renderItem={({ item }) => (
-                    <View style={styles.coinContainer}>
+                    <TouchableOpacity
+                        style={styles.coinContainer}
+                        onPress={() => handleCoinPress(item)}
+                    >
                         <Text style={styles.coinName}>
                             {item.name} ({item.symbol})
                         </Text>
-                        <Text>Quantity: {item.quantity}</Text>
-                        <View style={styles.actions}>
-                            <Button
-                                title="Buy"
-                                onPress={() => {
-                                    setSelectedCoin(item);
-                                    setAction('buy');
-                                    setIsModalVisible(true);
-                                }}
-                            />
-                            <Button
-                                title="Sell"
-                                onPress={() => {
-                                    setSelectedCoin(item);
-                                    setAction('sell');
-                                    setIsModalVisible(true);
-                                }}
-                                color="red"
-                            />
-                        </View>
-                    </View>
+                        <Text style={styles.coinDetails}>Quantity: {item.quantity}</Text>
+                        <Text style={styles.coinDetails}>
+                            Purchase Price: ${parseFloat(item.purchasePrice).toLocaleString()}
+                        </Text>
+                    </TouchableOpacity>
                 )}
             />
-            {selectedCoin && (
-                <AddCoinModal
-                    isVisible={isModalVisible}
-                    onClose={() => setIsModalVisible(false)}
-                    onConfirm={handleTransaction}
-                    coin={selectedCoin}
-                    action={action}
-                />
-            )}
         </View>
     );
 }
@@ -118,9 +90,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#FFFFFF',
     },
-    actions: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 10,
+    coinDetails: {
+        color: '#A0A0A0',
+    },
+    errorText: {
+        color: '#FF5252',
+        fontSize: 16,
+        textAlign: 'center',
     },
 });
