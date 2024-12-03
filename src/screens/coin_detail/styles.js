@@ -3,23 +3,30 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0D0D0D',
+        backgroundColor: '#121212',
+    },
+    scrollContainer: {
+        flexGrow: 1,
         padding: 20,
+        backgroundColor: '#121212', 
     },
     topSection: {
-        alignItems: 'center',
+        backgroundColor: '#1F1F2E',
+        padding: 20,
+        borderRadius: 10,
         marginBottom: 20,
+        alignItems: 'center',
     },
     coinName: {
         fontSize: 24,
-        color: '#FFFFFF',
         fontWeight: 'bold',
+        color: '#FFFFFF',
         marginBottom: 10,
     },
     price: {
-        fontSize: 22,
+        fontSize: 20,
         color: '#BB86FC',
-        marginBottom: 10,
+        marginBottom: 20,
     },
     marketCap: {
         fontSize: 16,
@@ -28,29 +35,50 @@ export default StyleSheet.create({
     },
     change: {
         fontSize: 16,
-        color: '#4CAF50',
         marginBottom: 20,
     },
-    balance: {
-        fontSize: 16,
-        color: '#A0A0A0',
-        marginVertical: 10,
+    positiveChange: {
+        color: '#4CAF50',
+    },
+    negativeChange: {
+        color: '#FF5252',
     },
     buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginVertical: 15,
-        width: '80%',
+        justifyContent: 'space-around',
+        width: '100%',
+    },
+    actionButton: {
+        flex: 1,
+        marginHorizontal: 10,
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    buyButton: {
+        backgroundColor: '#4CAF50',
+    },
+    sellButton: {
+        backgroundColor: '#FF5252',
+    },
+    buttonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
     marketList: {
         marginTop: 20,
     },
     marketTile: {
         flex: 1,
-        backgroundColor: '#1F1F1F',
+        backgroundColor: '#2A2A3E',
         padding: 15,
         margin: 5,
-        borderRadius: 8,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.7,
+        shadowRadius: 6,
     },
     marketName: {
         color: '#FFFFFF',
@@ -60,28 +88,23 @@ export default StyleSheet.create({
     marketPrice: {
         color: '#BB86FC',
         fontSize: 14,
-        marginBottom: 5,
     },
     marketVolume: {
         color: '#A0A0A0',
         fontSize: 14,
-    },
-    errorText: {
-        color: '#FF5252',
-        fontSize: 16,
-        textAlign: 'center',
+        marginTop: 5,
     },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
     },
     modalContent: {
         width: '80%',
-        backgroundColor: '#1F1F1F',
-        borderRadius: 10,
+        backgroundColor: '#1F1F2E',
         padding: 20,
+        borderRadius: 10,
     },
     modalTitle: {
         color: '#FFFFFF',
@@ -95,10 +118,27 @@ export default StyleSheet.create({
         borderRadius: 8,
         padding: 10,
         marginBottom: 15,
-        fontSize: 16,
     },
     modalActions: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
+    },
+    modalButton: {
+        flex: 1,
+        padding: 10,
+        borderRadius: 8,
+        marginHorizontal: 10,
+        alignItems: 'center',
+    },
+    confirmButton: {
+        backgroundColor: '#4CAF50',
+    },
+    cancelButton: {
+        backgroundColor: '#FF5252',
+    },
+    modalButtonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });

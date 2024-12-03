@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, FlatList, Button, Alert, Modal, TextInput } from 'react-native';
+import {
+    View,
+    Text,
+    ActivityIndicator,
+    FlatList,
+    Modal,
+    TextInput,
+    TouchableOpacity,
+    Alert,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCoinDetails, fetchCoinMarkets } from '../../redux/slices/CoinSlice';
 import { fetchCandleData } from '../../redux/slices/CandleSlice';
@@ -19,7 +28,7 @@ export default function CoinDetailScreen({ route }) {
     const isFocused = useIsFocused();
 
     const { coinDetails, markets, status, error } = useSelector((state) => state.coins);
-    const { candleData, candleStatus, candleError } = useSelector((state) => state.candles);
+    const { candleData, candleStatus } = useSelector((state) => state.candles);
     const { balance } = useSelector((state) => state.portfolio);
 
     useEffect(() => {
@@ -51,25 +60,14 @@ export default function CoinDetailScreen({ route }) {
     }, [dispatch, coinId]);
 
     const isLoading = status === 'loading' || candleStatus === 'loading';
-    const hasError = error || candleError;
 
     const handleTransaction = () => {
-        if (!userId) {
-            Alert.alert('Error', 'User ID is missing. Please log in.');
-            return;
-        }
-
         const quantityValue = parseFloat(quantity || 0);
         const priceValue = parseFloat(coinDetails?.price_usd || 0);
         const totalCost = parseFloat((priceValue * quantityValue).toFixed(2));
 
-        if (isNaN(quantityValue) || quantityValue <= 0) {
-            Alert.alert('Error', 'Invalid quantity.');
-            return;
-        }
-
         if (transactionType === 'buy' && totalCost > balance) {
-            Alert.alert('Error', 'Insufficient balance to complete the transaction.');
+            Alert.alert('Error', 'Insufficient balance.');
             return;
         }
 
@@ -84,31 +82,18 @@ export default function CoinDetailScreen({ route }) {
         )
             .unwrap()
             .then(() => {
-                Alert.alert(
-                    'Success',
-                    `${transactionType === 'buy' ? 'Bought' : 'Sold'} ${quantityValue} ${coinDetails.symbol}`
-                );
+                Alert.alert('Success', `${transactionType === 'buy' ? 'Bought' : 'Sold'} ${quantityValue} ${coinDetails.symbol}`);
                 setModalVisible(false);
                 setQuantity('');
-                dispatch(fetchPortfolio(userId)); // Fetch updated balance and portfolio
+                dispatch(fetchPortfolio(userId));
             })
-            .catch((err) => Alert.alert('Error', `Failed to complete transaction: ${err}`));
+            .catch((err) => Alert.alert('Error', `Transaction failed: ${err}`));
     };
 
     if (isLoading) {
         return (
             <View style={styles.container}>
                 <ActivityIndicator size="large" color="#BB86FC" />
-            </View>
-        );
-    }
-
-    if (hasError) {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.errorText}>
-                    {error || candleError || 'An error occurred'}
-                </Text>
             </View>
         );
     }
@@ -121,64 +106,75 @@ export default function CoinDetailScreen({ route }) {
         );
     }
 
-    const currentPrice = parseFloat(coinDetails?.price_usd || 0);
-    const marketCap = parseFloat(coinDetails?.market_cap_usd || 0).toLocaleString();
-    const percentChange24h = parseFloat(coinDetails?.percent_change_24h || 0).toFixed(2);
-
     return (
-        <View style={styles.container}>
-            <View style={styles.topSection}>
-                <Text style={styles.coinName}>
-                    {coinDetails?.name || 'N/A'} ({coinDetails?.symbol || 'N/A'})
-                </Text>
-                <Text style={styles.price}>${currentPrice.toLocaleString()}</Text>
-                <Text style={styles.marketCap}>Market Cap: ${marketCap}</Text>
-                <Text style={styles.change}>24h Change: {percentChange24h}%</Text>
-                <Text style={styles.balance}>Your Balance: ${balance.toLocaleString()}</Text>
-                <View style={styles.buttonContainer}>
-                    <Button
-                        title="Buy"
-                        onPress={() => {
-                            setTransactionType('buy');
-                            setModalVisible(true);
-                        }}
-                    />
-                    <Button
-                        title="Sell"
-                        color="red"
-                        onPress={() => {
-                            setTransactionType('sell');
-                            setModalVisible(true);
-                        }}
-                    />
-                </View>
-            </View>
-
-            <CandleChart data={candleData || []} />
-
+        <>
             <FlatList
-                data={markets || []}
-                numColumns={2}
-                keyExtractor={(item, index) => `${item?.name}-${index}`}
-                contentContainerStyle={styles.marketList}
+                data={markets}
+                keyExtractor={(item, index) => `${item.name}-${index}`}
+                contentContainerStyle={styles.scrollContainer}
+                ListHeaderComponent={
+                    <>
+                        <View style={styles.topSection}>
+                            <Text style={styles.coinName}>
+                                {coinDetails.name} ({coinDetails.symbol})
+                            </Text>
+                            <Text style={styles.price}>${parseFloat(coinDetails.price_usd).toLocaleString()}</Text>
+                            <Text style={styles.marketCap}>Market Cap: ${parseFloat(coinDetails.market_cap_usd).toLocaleString()}</Text>
+                            <Text
+                                style={[
+                                    styles.change,
+                                    parseFloat(coinDetails.percent_change_24h) >= 0
+                                        ? styles.positiveChange
+                                        : styles.negativeChange,
+                                ]}
+                            >
+                                24h Change: {parseFloat(coinDetails.percent_change_24h).toFixed(2)}%
+                            </Text>
+                            <View style={styles.buttonContainer}>
+                                <TouchableOpacity
+                                    style={[styles.actionButton, styles.buyButton]}
+                                    onPress={() => {
+                                        setTransactionType('buy');
+                                        setModalVisible(true);
+                                    }}
+                                >
+                                    <Text style={styles.buttonText}>Buy</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.actionButton, styles.sellButton]}
+                                    onPress={() => {
+                                        setTransactionType('sell');
+                                        setModalVisible(true);
+                                    }}
+                                >
+                                    <Text style={styles.buttonText}>Sell</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        <CandleChart data={candleData || []} />
+                    </>
+                }
                 renderItem={({ item }) => (
                     <View style={styles.marketTile}>
-                        <Text style={styles.marketName}>{item?.name || 'N/A'}</Text>
+                        <Text style={styles.marketName}>{item.name}</Text>
                         <Text style={styles.marketPrice}>
-                            ${parseFloat(item?.price_usd || 0).toLocaleString()}
+                            ${parseFloat(item.price_usd).toLocaleString()}
                         </Text>
                         <Text style={styles.marketVolume}>
-                            Vol: ${parseFloat(item?.volume_usd || 0).toLocaleString()}
+                            Vol: ${parseFloat(item.volume_usd || 0).toLocaleString()}
                         </Text>
                     </View>
                 )}
+                style={{ backgroundColor: '#121212' }}
+                bounces={false}
+                overScrollMode="never"
+                showsVerticalScrollIndicator={false}
             />
-
-            <Modal visible={modalVisible} transparent={true}>
+            <Modal visible={modalVisible} transparent>
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>
-                            {transactionType === 'buy' ? 'Buy' : 'Sell'} {coinDetails?.symbol}
+                            {transactionType === 'buy' ? 'Buy' : 'Sell'} {coinDetails.symbol}
                         </Text>
                         <TextInput
                             style={styles.input}
@@ -188,23 +184,22 @@ export default function CoinDetailScreen({ route }) {
                             onChangeText={setQuantity}
                         />
                         <View style={styles.modalActions}>
-                            <Button
-                                title="Confirm"
+                            <TouchableOpacity
+                                style={[styles.modalButton, styles.confirmButton]}
                                 onPress={handleTransaction}
-                                disabled={!quantity || isNaN(quantity) || quantity <= 0}
-                            />
-                            <Button
-                                title="Cancel"
-                                color="red"
-                                onPress={() => {
-                                    setModalVisible(false);
-                                    setQuantity('');
-                                }}
-                            />
+                            >
+                                <Text style={styles.modalButtonText}>Confirm</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.modalButton, styles.cancelButton]}
+                                onPress={() => setModalVisible(false)}
+                            >
+                                <Text style={styles.modalButtonText}>Cancel</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>
             </Modal>
-        </View>
+        </>
     );
 }
