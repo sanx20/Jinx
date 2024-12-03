@@ -4,12 +4,12 @@ import {
     Text,
     FlatList,
     ActivityIndicator,
-    StyleSheet,
     TextInput,
     TouchableOpacity,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCryptoNews } from '../../redux/slices/NewsSlice';
+import styles from './styles';
 
 const CryptoNewsScreen = () => {
     const dispatch = useDispatch();
@@ -52,8 +52,6 @@ const CryptoNewsScreen = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Crypto News</Text>
-
             <TextInput
                 style={styles.searchBar}
                 placeholder="Search by currency (e.g., BTC, ETH)"
@@ -92,97 +90,5 @@ const CryptoNewsScreen = () => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#121212',
-        padding: 10,
-    },
-    loader: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    errorContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    errorText: {
-        color: '#BB86FC',
-        marginBottom: 10,
-        fontSize: 16,
-    },
-    retryText: {
-        color: '#FFFFFF',
-        fontSize: 14,
-        textDecorationLine: 'underline',
-    },
-    header: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#BB86FC',
-        textAlign: 'center',
-        marginVertical: 20,
-    },
-    searchBar: {
-        backgroundColor: '#1F1B24',
-        color: '#FFFFFF',
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 15,
-        fontSize: 16,
-    },
-    filterContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginBottom: 15,
-    },
-    filterButton: {
-        backgroundColor: '#1F1B24',
-        padding: 10,
-        borderRadius: 8,
-    },
-    filterButtonActive: {
-        backgroundColor: '#BB86FC',
-        padding: 10,
-        borderRadius: 8,
-    },
-    filterText: {
-        color: '#FFFFFF',
-        fontSize: 14,
-        textAlign: 'center',
-    },
-    newsList: {
-        paddingBottom: 20,
-    },
-    newsItem: {
-        backgroundColor: '#1F1B24',
-        padding: 15,
-        marginVertical: 8,
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    title: {
-        color: '#FFFFFF',
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 5,
-    },
-    source: {
-        color: '#B0B0B0',
-        fontSize: 14,
-        marginBottom: 5,
-    },
-    panicScore: {
-        color: '#FF3E4D',
-        fontSize: 14,
-    },
-});
 
 export default CryptoNewsScreen;
