@@ -11,26 +11,14 @@ import CryptoNewsScreen from './src/screens/crypto_news/CryptoNewScreen';
 import CoinDetailScreen from './src/screens/coin_detail/CoinDetailScreen';
 import PortfolioScreen from './src/screens/portfolio/PortfolioScreen';
 import AuthScreen from './src/screens/auth/AuthScreen';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = ({ navigation }) => {
-  const handleLogout = async () => {
-    try {
-      await signOut(FIREBASE_AUTH);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Auth' }],
-      });
-    } catch (error) {
-      Alert.alert('Error', 'Failed to log out: ' + error.message);
-    }
-  };
-
+const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -68,18 +56,7 @@ const TabNavigator = ({ navigation }) => {
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ title: 'Dashboard' }} />
       <Tab.Screen name="Exchanges" component={ExchangesScreen} options={{ title: 'Exchanges' }} />
       <Tab.Screen name="CryptoNews" component={CryptoNewsScreen} options={{ title: 'Crypto News' }} />
-      <Tab.Screen
-        name="Portfolio"
-        component={PortfolioScreen}
-        options={{
-          title: 'Portfolio',
-          headerRight: () => (
-            <TouchableOpacity onPress={handleLogout} style={{ marginRight: 15 }}>
-              <Icon name="log-out-outline" size={24} color="#8A2BE2" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
+      <Tab.Screen name="Portfolio" component={PortfolioScreen} options={{ title: 'Portfolio' }} />
     </Tab.Navigator>
   );
 };

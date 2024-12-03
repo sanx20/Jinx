@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPortfolio } from '../../redux/slices/PortfolioSlice';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
@@ -18,6 +18,10 @@ export default function PortfolioScreen({ navigation }) {
             dispatch(fetchPortfolio(userId));
         }
     }, [isFocused, dispatch, userId]);
+
+    const handleLogout = () => {
+        FIREBASE_AUTH.signOut();
+    };
 
     if (status === 'loading') {
         return (
@@ -40,13 +44,12 @@ export default function PortfolioScreen({ navigation }) {
         return (
             <View style={styles.container}>
                 <Text style={styles.emptyText}>Your portfolio is empty. Start investing!</Text>
+                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                    <Text style={styles.logoutButtonText}>Logout</Text>
+                </TouchableOpacity>
             </View>
         );
     }
-
-    const handleCoinPress = (coin) => {
-        navigation.navigate('CoinDetail', { coinId: coin.id });
-    };
 
     return (
         <View style={styles.container}>
@@ -63,7 +66,7 @@ export default function PortfolioScreen({ navigation }) {
                 renderItem={({ item }) => (
                     <TouchableOpacity
                         style={styles.coinContainer}
-                        onPress={() => handleCoinPress(item)}
+                        onPress={() => navigation.navigate('CoinDetail', { coinId: item.id })}
                     >
                         <Text style={styles.coinName}>
                             {item.name} ({item.symbol})
@@ -74,6 +77,9 @@ export default function PortfolioScreen({ navigation }) {
                     </TouchableOpacity>
                 )}
             />
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                <Text style={styles.logoutButtonText}>Logout</Text>
+            </TouchableOpacity>
         </View>
     );
 }
