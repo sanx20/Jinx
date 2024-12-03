@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -7,18 +7,30 @@ import { Provider } from 'react-redux';
 import { store } from './src/redux/store';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import ExchangesScreen from './src/screens/exchanges/ExchangesScreen';
-import CryptoNewsScreen from './src/screens/crypto_news/CryptoNewsScreen';
+import CryptoNewsScreen from './src/screens/crypto_news/CryptoNewScreen';
 import CoinDetailScreen from './src/screens/coin_detail/CoinDetailScreen';
 import PortfolioScreen from './src/screens/portfolio/PortfolioScreen';
 import AuthScreen from './src/screens/auth/AuthScreen';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+const TabNavigator = ({ navigation }) => {
+  const handleLogout = async () => {
+    try {
+      await signOut(FIREBASE_AUTH);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Auth' }],
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Failed to log out: ' + error.message);
+    }
+  };
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -42,10 +54,6 @@ const TabNavigator = () => {
           borderTopWidth: 0,
           height: 60,
           paddingBottom: 8,
-          shadowColor: '#8A2BE2',
-          shadowOffset: { width: 0, height: 5 },
-          shadowOpacity: 0.8,
-          shadowRadius: 10,
         },
         headerStyle: {
           backgroundColor: '#1A1A2E',
@@ -60,7 +68,18 @@ const TabNavigator = () => {
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ title: 'Dashboard' }} />
       <Tab.Screen name="Exchanges" component={ExchangesScreen} options={{ title: 'Exchanges' }} />
       <Tab.Screen name="CryptoNews" component={CryptoNewsScreen} options={{ title: 'Crypto News' }} />
-      <Tab.Screen name="Portfolio" component={PortfolioScreen} options={{ title: 'Portfolio' }} />
+      <Tab.Screen
+        name="Portfolio"
+        component={PortfolioScreen}
+        options={{
+          title: 'Portfolio',
+          headerRight: () => (
+            <TouchableOpacity onPress={handleLogout} style={{ marginRight: 15 }}>
+              <Icon name="log-out-outline" size={24} color="#8A2BE2" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 };

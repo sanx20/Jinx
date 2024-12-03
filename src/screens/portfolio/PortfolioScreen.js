@@ -1,21 +1,16 @@
 import React, { useEffect } from 'react';
-import {
-    View,
-    Text,
-    FlatList,
-    StyleSheet,
-    ActivityIndicator,
-    TouchableOpacity,
-} from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPortfolio } from '../../redux/slices/PortfolioSlice';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { useIsFocused } from '@react-navigation/native';
+import styles from './styles';
 
 export default function PortfolioScreen({ navigation }) {
     const dispatch = useDispatch();
     const isFocused = useIsFocused();
     const userId = FIREBASE_AUTH.currentUser?.uid;
+
     const { portfolio, balance, status, error } = useSelector((state) => state.portfolio);
 
     useEffect(() => {
@@ -40,16 +35,31 @@ export default function PortfolioScreen({ navigation }) {
         );
     }
 
+    const portfolioItems = portfolio ? Object.values(portfolio) : [];
+    if (portfolioItems.length === 0) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.emptyText}>Your portfolio is empty. Start investing!</Text>
+            </View>
+        );
+    }
+
     const handleCoinPress = (coin) => {
         navigation.navigate('CoinDetail', { coinId: coin.id });
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.balance}>Balance: ${balance.toLocaleString()}</Text>
+            <View style={styles.balanceContainer}>
+                <Text style={styles.balanceTitle}>Portfolio Balance</Text>
+                <Text style={styles.balanceValue}>
+                    ${!isNaN(balance) ? balance.toLocaleString() : '0.00'}
+                </Text>
+            </View>
             <FlatList
-                data={Object.values(portfolio)}
+                data={portfolioItems}
                 keyExtractor={(item) => item.symbol}
+                contentContainerStyle={styles.listContainer}
                 renderItem={({ item }) => (
                     <TouchableOpacity
                         style={styles.coinContainer}
@@ -58,9 +68,8 @@ export default function PortfolioScreen({ navigation }) {
                         <Text style={styles.coinName}>
                             {item.name} ({item.symbol})
                         </Text>
-                        <Text style={styles.coinDetails}>Quantity: {item.quantity}</Text>
                         <Text style={styles.coinDetails}>
-                            Purchase Price: ${parseFloat(item.purchasePrice).toLocaleString()}
+                            Quantity: {item.quantity || '0'}
                         </Text>
                     </TouchableOpacity>
                 )}
@@ -68,34 +77,3 @@ export default function PortfolioScreen({ navigation }) {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: '#0D0D0D',
-    },
-    balance: {
-        fontSize: 18,
-        color: '#FFFFFF',
-        marginBottom: 20,
-    },
-    coinContainer: {
-        backgroundColor: '#1E1E1E',
-        padding: 15,
-        borderRadius: 8,
-        marginBottom: 15,
-    },
-    coinName: {
-        fontSize: 16,
-        color: '#FFFFFF',
-    },
-    coinDetails: {
-        color: '#A0A0A0',
-    },
-    errorText: {
-        color: '#FF5252',
-        fontSize: 16,
-        textAlign: 'center',
-    },
-});

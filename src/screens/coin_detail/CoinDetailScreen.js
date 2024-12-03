@@ -51,13 +51,16 @@ export default function CoinDetailScreen({ route }) {
         if (coinId) {
             dispatch(fetchCoinDetails(coinId));
             dispatch(fetchCoinMarkets(coinId));
+            dispatch(fetchCandleData(coinId));
+    
+            const intervalId = setInterval(() => {
+                if (coinId) dispatch(fetchCandleData(coinId));
+            }, 5000);
+    
+            return () => clearInterval(intervalId);
         }
-        const intervalId = setInterval(() => {
-            if (coinId) dispatch(fetchCandleData(coinId));
-        }, 5000);
-
-        return () => clearInterval(intervalId);
     }, [dispatch, coinId]);
+    
 
     const isLoading = status === 'loading' || candleStatus === 'loading';
 
