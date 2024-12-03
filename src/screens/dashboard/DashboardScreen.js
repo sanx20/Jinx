@@ -1,5 +1,14 @@
 import React, { useEffect } from 'react';
-import { View, FlatList, StyleSheet, ActivityIndicator, Text } from 'react-native';
+import {
+    View,
+    FlatList,
+    StyleSheet,
+    ActivityIndicator,
+    Text,
+    TouchableOpacity,
+    ImageBackground,
+    Animated
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMarketData } from '../../redux/slices/CoinSlice';
 import { fetchGlobalStats } from '../../redux/slices/GlobalSlice';
@@ -40,7 +49,7 @@ export default function DashboardScreen({ navigation }) {
         if (isFetchingMore) {
             return (
                 <View style={styles.loadingFooter}>
-                    <ActivityIndicator size="small" color="#BB86FC" />
+                    <ActivityIndicator size="small" color="#8A2BE2" />
                 </View>
             );
         }
@@ -72,23 +81,28 @@ export default function DashboardScreen({ navigation }) {
     return (
         <View style={styles.container}>
             {globalStatus === 'loading' ? (
-                <ActivityIndicator size="large" color="#BB86FC" />
+                <ActivityIndicator size="large" color="#8A2BE2" />
             ) : globalError ? (
                 <Text style={styles.errorText}>Error: {globalError}</Text>
             ) : (
                 globalStats && (
-                    <View style={styles.globalStats}>
+                    <ImageBackground
+                        source={require('../../../assets/dashboard_bg.png')}
+                        style={styles.globalStatsContainer}
+                        imageStyle={styles.backgroundImageStyle}
+                    >
+                        <Text style={styles.statsHeader}>Global Market Stats</Text>
                         <Text style={styles.statsText}>Total Coins: {globalStats.coins_count}</Text>
                         <Text style={styles.statsText}>
                             Market Cap: ${parseFloat(globalStats.total_mcap).toLocaleString()}
                         </Text>
                         <Text style={styles.statsText}>BTC Dominance: {globalStats.btc_d}%</Text>
-                    </View>
+                    </ImageBackground>
                 )
             )}
 
             {marketStatus === 'loading' && marketData.length === 0 ? (
-                <ActivityIndicator size="large" color="#BB86FC" />
+                <ActivityIndicator size="large" color="#8A2BE2" />
             ) : marketError ? (
                 <Text style={styles.errorText}>Error: {marketError}</Text>
             ) : (

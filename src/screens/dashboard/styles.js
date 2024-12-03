@@ -5,15 +5,30 @@ export default StyleSheet.create({
         flex: 1,
         backgroundColor: '#0D0D0D',
     },
-    globalStats: {
+    globalStatsContainer: {
         padding: 16,
         margin: 16,
-        backgroundColor: '#1E1E1E',
-        borderRadius: 8,
+        backgroundColor: 'rgba(30, 30, 47, 0.9)',
+        borderRadius: 12,
+        shadowColor: '#8A2BE2',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.6,
+        shadowRadius: 8,
+        overflow: 'hidden',
+    },
+    backgroundImageStyle: {
+        opacity: 0.4,
+        resizeMode: 'cover',
+    },
+    statsHeader: {
+        color: '#8A2BE2',
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
     },
     statsText: {
-        color: '#BB86FC',
-        fontSize: 14,
+        color: '#FFFFFF',
+        fontSize: 16,
         marginBottom: 8,
     },
     loadingFooter: {
@@ -25,7 +40,7 @@ export default StyleSheet.create({
         alignItems: 'center',
     },
     noMoreDataText: {
-        color: '#BB86FC',
+        color: '#8A2BE2',
         fontSize: 12,
         marginTop: 5,
     },
