@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
     View,
     TextInput,
-    Button,
     ActivityIndicator,
     Text,
     TouchableOpacity,
@@ -10,6 +9,7 @@ import {
     ScrollView,
     Platform,
     Alert,
+    Image,
 } from 'react-native';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
@@ -26,7 +26,6 @@ export default function AuthScreen() {
         setLoading(true);
         try {
             await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
-            Alert.alert('Success', 'You are now signed in!');
         } catch (error) {
             Alert.alert('Sign-in Failed', error.message);
         }
@@ -49,8 +48,6 @@ export default function AuthScreen() {
                 createdAt: new Date().toISOString(),
                 balance: 10000,
             });
-
-            Alert.alert('Success', 'Account created successfully!');
         } catch (error) {
             Alert.alert('Sign-up Failed', error.message);
         }
@@ -67,13 +64,17 @@ export default function AuthScreen() {
                 keyboardShouldPersistTaps="handled"
             >
                 <View style={styles.innerContainer}>
+                    <Image
+                        source={require('../../../assets/jinx_logo.png')}
+                        style={styles.logo}
+                    />
                     <Text style={styles.header}>
-                        {isSignUp ? 'Create an Account' : 'Sign In'}
+                        {isSignUp ? 'Join the Chaos' : 'Welcome Back'}
                     </Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="Email"
-                        placeholderTextColor="#B0B0B0"
+                        placeholder="Enter your email"
+                        placeholderTextColor="#8A2BE2"
                         value={email}
                         onChangeText={setEmail}
                         keyboardType="email-address"
@@ -82,8 +83,8 @@ export default function AuthScreen() {
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder="Password"
-                        placeholderTextColor="#B0B0B0"
+                        placeholder="Enter your password"
+                        placeholderTextColor="#8A2BE2"
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry
@@ -92,24 +93,27 @@ export default function AuthScreen() {
                     />
                     {!loading ? (
                         <>
-                            <Button
-                                title={isSignUp ? 'Sign Up' : 'Sign In'}
+                            <TouchableOpacity
+                                style={styles.actionButton}
                                 onPress={isSignUp ? handleSignUp : handleSignIn}
-                                color="#BB86FC"
-                            />
+                            >
+                                <Text style={styles.buttonText}>
+                                    {isSignUp ? 'Sign Up Now' : 'Sign In'}
+                                </Text>
+                            </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => setIsSignUp((prev) => !prev)}
                                 style={styles.toggleButton}
                             >
                                 <Text style={styles.toggleText}>
                                     {isSignUp
-                                        ? 'Already have an account? Sign In'
-                                        : "Don't have an account? Sign Up"}
+                                        ? 'Already a User? Sign In'
+                                        : "New Here? Join the Chaos"}
                                 </Text>
                             </TouchableOpacity>
                         </>
                     ) : (
-                        <ActivityIndicator size="large" color="#BB86FC" />
+                        <ActivityIndicator size="large" color="#8A2BE2" />
                     )}
                 </View>
             </ScrollView>
