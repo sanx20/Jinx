@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import { store } from './src/redux/store';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import ExchangesScreen from './src/screens/exchanges/ExchangesScreen';
-import CryptoNewsScreen from './src/screens/crypto_news/CryptoNewsSCreen';
+import CryptoNewsScreen from './src/screens/crypto_news/CryptoNewsScreen';
 import CoinDetailScreen from './src/screens/coin_detail/CoinDetailScreen';
 import PortfolioScreen from './src/screens/portfolio/PortfolioScreen';
 import AuthScreen from './src/screens/auth/AuthScreen';
@@ -24,64 +24,43 @@ const TabNavigator = () => {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
-
           if (route.name === 'Dashboard') {
-            iconName = 'stats-chart-outline';
+            iconName = 'stats-chart';
           } else if (route.name === 'Exchanges') {
-            iconName = 'business-outline';
+            iconName = 'business';
           } else if (route.name === 'CryptoNews') {
-            iconName = 'newspaper-outline';
-          }
-          else if (route.name === 'Porfolio') {
-            iconName = 'newspaper-outline';
+            iconName = 'newspaper';
+          } else if (route.name === 'Portfolio') {
+            iconName = 'wallet';
           }
           return <Icon name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: 'white',
-        tabBarInactiveTintColor: 'gray',
-        tabBarStyle: { backgroundColor: 'black' },
+        tabBarActiveTintColor: '#8A2BE2',
+        tabBarInactiveTintColor: '#483D8B',
+        tabBarStyle: {
+          backgroundColor: '#1A1A2E',
+          borderTopWidth: 0,
+          height: 60,
+          paddingBottom: 8,
+          shadowColor: '#8A2BE2',
+          shadowOffset: { width: 0, height: 5 },
+          shadowOpacity: 0.8,
+          shadowRadius: 10,
+        },
+        headerStyle: {
+          backgroundColor: '#1A1A2E',
+        },
+        headerTintColor: '#8A2BE2',
+        headerTitleStyle: {
+          fontSize: 18,
+          fontWeight: 'bold',
+        },
       })}
     >
-      <Tab.Screen
-        name="Dashboard"
-        component={DashboardScreen}
-        options={{
-          headerStyle: { backgroundColor: 'black' },
-          headerTitle: '',
-          headerTintColor: '#BB86FC',
-          headerTitleStyle: { fontWeight: 'bold' },
-        }}
-      />
-      <Tab.Screen
-        name="Exchanges"
-        component={ExchangesScreen}
-        options={{
-          headerStyle: { backgroundColor: 'black' },
-          headerTitle: 'Exchanges',
-          headerTintColor: '#BB86FC',
-          headerTitleStyle: { fontWeight: 'bold' },
-        }}
-      />
-      <Tab.Screen
-        name="CryptoNews"
-        component={CryptoNewsScreen}
-        options={{
-          headerStyle: { backgroundColor: 'black' },
-          headerTitle: 'News',
-          headerTintColor: '#BB86FC',
-          headerTitleStyle: { fontWeight: 'bold' },
-        }}
-      />
-      <Tab.Screen
-        name="Porfolio"
-        component={PortfolioScreen}
-        options={{
-          headerStyle: { backgroundColor: 'black' },
-          headerTitle: 'Portfolio',
-          headerTintColor: '#BB86FC',
-          headerTitleStyle: { fontWeight: 'bold' },
-        }}
-      />
+      <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ title: 'Dashboard' }} />
+      <Tab.Screen name="Exchanges" component={ExchangesScreen} options={{ title: 'Exchanges' }} />
+      <Tab.Screen name="CryptoNews" component={CryptoNewsScreen} options={{ title: 'Crypto News' }} />
+      <Tab.Screen name="Portfolio" component={PortfolioScreen} options={{ title: 'Portfolio' }} />
     </Tab.Navigator>
   );
 };
@@ -102,28 +81,24 @@ const App = () => {
   if (!authChecked) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#BB86FC" />
+        <ActivityIndicator size="large" color="#8A2BE2" />
       </View>
     );
   }
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={user ? 'Main' : 'Auth'}>
+      <Stack.Navigator>
         {user ? (
           <>
-            <Stack.Screen
-              name="Main"
-              component={TabNavigator}
-              options={{ headerShown: false }}
-            />
+            <Stack.Screen name="Main" component={TabNavigator} options={{ headerShown: false }} />
             <Stack.Screen
               name="CoinDetail"
               component={CoinDetailScreen}
               options={{
-                headerStyle: { backgroundColor: 'black' },
+                headerStyle: { backgroundColor: '#1A1A2E' },
                 headerTitle: 'Coin Detail',
-                headerTintColor: '#fff',
+                headerTintColor: '#8A2BE2',
               }}
             />
           </>
@@ -152,6 +127,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'black',
+    backgroundColor: '#1A1A2E',
   },
 });
